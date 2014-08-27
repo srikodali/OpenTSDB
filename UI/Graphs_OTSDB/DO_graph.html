@@ -1,0 +1,87 @@
+<html>
+<head>
+  <!--JQUery Headers-->
+  <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+  <script type="text/javascript" src="jquery.ajax-cross-origin.min.js"></script>
+  
+  <!--DataTable Headers-->
+ <link rel="stylesheet" type="text/css" href="http://cdn.datatables.net/1.10.2/css/jquery.dataTables.css"></link>
+  <script type="text/javascript" src="http://cdn.datatables.net/1.10.2/js/jquery.dataTables.min.js"></script>
+   <script type="text/javascript" src="Highcharts-4.0.3/js/highcharts.js"></script> 
+</head>
+
+<body>
+    <input type="button" id="btn" value="View JSON Data">
+	<br/><br/>
+	
+	<div id="container"></div>
+	
+
+	<script type="text/javascript">
+		$(function() {
+		  $( '#btn' ).click(function(){
+		  
+	/* *************************************Data from OTSDB******************************************** */
+			var url = "http://54.251.133.64:4242/api/query?start=18d-ago&m=sum:sensor_eruvaka.OH{sensorid=xyz,pass=xyz123}";
+			var dps_length;
+			var processed_json = new Array();
+			$.ajax({
+			  crossOrigin: true,
+			  url: url,
+			  success: function(data) {
+					
+		
+		/* ***************************************Collecting dps Values and plotting Graph****************************************** */
+					
+					$.each(JSON.parse(data),function(idx, obj){
+								$.each(obj['dps'], function(i,v){
+									
+									// Populate series
+									var dps_length = Object.keys(obj['dps']).length;
+									
+										processed_json.push([i*1000, v]);
+									
+								 
+									// draw chart
+									$('#container').highcharts({
+									chart: {
+										type: 'line',
+										zoomType: 'x'
+									},
+									title: {
+										text: "Dissolved Oxygen(mg/L)"
+									},
+									
+									xAxis: {
+										title: {
+												text: 'Date and Time'
+											},
+									   type: 'datetime',
+									   dateTimeLabelFormats: {
+										   day: '%e %b'
+									   }
+								   },
+									yAxis: {                
+									   title: {
+											text: 'Dissolved Oxygen(mg/L)'
+										}
+									},
+									series: [{
+										name : 'Dissolved Oxygen',
+										data: processed_json
+									}]
+								}); 
+									
+									
+								});
+					
+					});
+					
+
+			}
+		  });
+		  });
+		}); 
+	</script>
+</body>
+</html>
