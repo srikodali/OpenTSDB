@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="favicon.ico">
+
+    <title>Eruvaka Technologies</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/custom.css" rel="stylesheet">
+	<!-- DataTable css file -->
+	<link rel="stylesheet" href="css/graph/jquery.datetimepicker.css" />
+	<link rel="stylesheet" type="text/css" href="http://cdn.datatables.net/1.10.2/css/jquery.dataTables.css"></link>	
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+  </head>
+
+  <body>
+	<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="dashboard.html">Eruvaka Technologies</a>
+			</div>
+			<div class="navbar-collapse collapse">
+				<ul class="nav navbar-nav">
+					<li class="active"><a href="dashboard.html">Dashboard</a></li>
+					<li><a href="#about">Devices</a></li>
+					<li><a href="graph.html">Graph</a></li>
+					<li><a href="#contact">Settings</a></li>
+				</ul>
+				<ul class="nav navbar-nav navbar-right">
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">Demo user <span class="caret"></span></a>
+						<ul class="dropdown-menu" role="menu">
+							<li><a href="#">Profile</a></li>
+							<li><a href="dashboard/logout">Log out</a></li>
+						</ul>
+					</li>
+				</ul>
+			</div><!--/.nav-collapse -->
+		</div>
+	</div>
+    <div class="container">
+		<div class="row">
+			
+			<div class="col-md-3 sidebar">
+				<h4>Devices</h4>
+				<ul class="nav nav-tabs nav-stacked">
+					<li><a href='#'>Device 1</a></li>
+					<li><a href='#'>Device 2</a></li>
+					<li><a href='#'>Device 3</a></li>
+				</ul>
+			</div>
+			<div class="col-md-9">
+				<div class="row">
+					<div class="col-md-12 divHeader">
+						<div class="row">
+							<div class="col-md-5">
+								<h3>Eruvaka_device001</h3>
+							</div>
+							<div class="col-md-3">
+								<h3>Pond 1</h3>
+							</div>
+							<div class="col-md-3">
+								<a href="graph.html" class="btn btn-primary get_graph" id="get_graph">View Graph</a>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-12">
+						<div style="float:right;right:0;">					
+							<label>From:</label><input type="text" id="from_date" value="" class="from_date" style="width: 120px;"/>
+							<label>To:</label><input type="text" id="to_date" class="to_date" value="" style="width: 120px;" />
+							<!--<button type="button" class="btn btn-default get_graph" id="get_graph">View Graph</button> -->
+							<a href="#" class="btn btn-primary get_data" id="get_data">View Data</a>
+							<script>
+								function leadingZero(value){
+									if(value < 10){
+										return "0" + value.toString();
+									}
+										return value.toString();    
+								}
+								var d = new Date();
+								var	date = d.getFullYear()+"/"+leadingZero((d.getMonth()+1))+"/"+leadingZero(d.getDate())+" "+leadingZero(d.getHours())+":"+leadingZero(d.getMinutes());
+								document.getElementById("to_date").value = date;
+				
+								var d1 = new Date(d -(6*60*60*1000));
+								var	date1 = d1.getFullYear()+"/"+leadingZero((d1.getMonth()+1))+"/"+leadingZero(d1.getDate())+" "+leadingZero(d1.getHours())+":"+leadingZero(d1.getMinutes());
+								document.getElementById("from_date").value = date1;
+							</script>
+						</div><br><br><br>
+						<div id="demo"></div>
+					</div>
+				</div>
+			
+				
+				<script type="text/javascript">
+					
+					$(function() {
+						var from_date_time = $(".from_date").val();
+						var to_date_time = $(".to_date").val();
+						var device = "xyz";
+						getData(device,from_date_time,to_date_time);
+						$(document).on("click",".get_data", function(e){
+							from_date_time = $(".from_date").val();
+							to_date_time = $(".to_date").val();
+							
+							getData(device,from_date_time,to_date_time);
+						
+						});
+					  
+						function getData(id,f_date,t_date){
+							var url = "http://54.251.133.64:4242/api/query?start="+f_date+"&end="+t_date+"&m=sum:sensor_eruvaka.OH{sensorid=abc,pass=abc123}&m=sum:sensor_eruvaka.temp{sensorid=abc,pass=abc123}&m=sum:sensor_eruvaka.PH{sensorid=abc,pass=abc123}";
+							var dps_length;
+							var child_arry =[];
+							var child1_arry = [];
+							$.ajax({
+								crossOrigin: true,
+								url: url,
+								success: function(data) {
+									$.each(JSON.parse(data),function(idx, obj){
+										$.each(obj['dps'], function(i,v){
+											child_arry.push(v);
+											child1_arry.push(i);
+										});
+										dps_length = Object.keys(obj['dps']).length;
+									});
+									var len  = dps_length;
+									var row = [];
+									
+									for(var i=0; i< len; i++){
+										var row1 = [];
+										var first_col = [];
+										var second_col = [];
+										var third_col = [];
+										var fourth_col = [];
+										first_col.push(child_arry[i]);
+										second_col.push(child_arry[i+len]);
+										third_col.push(child_arry[i+len+len]);
+										var avg_time = ((parseInt(child1_arry[i]) + parseInt(child1_arry[i+len]) + parseInt(child1_arry[i+len+len]))/3);
+										var d = new Date();
+										var date = new Date(avg_time*1000+ d.getTimezoneOffset() * 60000);
+										date = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
+										fourth_col.push(date);
+															
+										row1.push(first_col);
+										row1.push(second_col);
+										row1.push(third_col);
+										row1.push(fourth_col);
+										row.push(row1);
+									}
+									
+						
+									$(document).ready(function() {
+										$('#demo').html( '<table cellpadding="0" cellspacing="0" border="0" class="display" id="example"></table>' );
+									 
+										$('#example').dataTable( {
+											"data": row,
+											"columns": [
+												{ "title": "Oxygen(mg/L)" },
+												{ "title": "Temperature(&#8451)" },
+												{ "title": "pH (7.5-8.5)"},
+												{ "title": "Date & Time"}
+											]
+										} );   
+									});
+								}
+							});
+						}
+					}); 
+				</script>
+			</div>			
+		</div>
+    </div>
+	
+	<!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>	
+	<script type="text/javascript" src="js/jquery.ajax-cross-origin.min.js"></script>
+  
+	<!--DataTable Headers-->
+	<script type="text/javascript" src="http://cdn.datatables.net/1.10.2/js/jquery.dataTables.min.js"></script>
+	<!-- DateTime Pickers -->
+	<script charset="utf-8" type="text/javascript" src="js/graph/jquery.datetimepicker.js"></script>
+	<!--<script type="text/javascript" src="./js/google.jquery.api.js"></script>-->
+	<script charset="utf-8" type="text/javascript" src="js/graph/jquery.timepicker.js"></script>
+	<!-- Scripts for Code -->
+	<script>
+		jQuery(function ($) {
+			$('.from_date').datetimepicker().datetimepicker({format:'Y/m/d H:i',step:5,closeOnDateSelect: false,closeOnTimeSelect: true});
+			$('.to_date').datetimepicker().datetimepicker({format:'Y/m/d H:i',step:5,closeOnDateSelect: false,closeOnTimeSelect: true});
+		});
+	</script>
+	<style>
+		.divHeader{
+			border-bottom: 1px solid #eee;
+			box-shadow: 0 14px 18px -14px #ededed;
+			margin: 0 0 15px;
+		}
+	</style>
+  </body>
+</html>
