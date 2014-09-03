@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="favicon.ico">
+
+    <title>Eruvaka Technologies</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/custom.css" rel="stylesheet">
+	
+	<!-- DateTime CSS -->
+	<link rel="stylesheet" href="css/graph/jquery.datetimepicker.css" />
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+  </head>
+
+  <body>
+	<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="dashboard.html">Eruvaka Technologies</a>
+			</div>
+			<div class="navbar-collapse collapse">
+				<ul class="nav navbar-nav">
+					<li><a href="dashboard.html">Dashboard</a></li>
+					<li><a href="#about">Devices</a></li>
+					<li><a href="graph.html">Graph</a></li>
+					<li><a href="#contact">Settings</a></li>
+				</ul>
+				<ul class="nav navbar-nav navbar-right">
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">Demo user <span class="caret"></span></a>
+						<ul class="dropdown-menu" role="menu">
+							<li><a href="#">Profile</a></li>
+							<li><a href="dashboard/logout">Log out</a></li>
+						</ul>
+					</li>
+				</ul>
+			</div><!--/.nav-collapse -->
+		</div>
+	</div>
+    <div class="container">
+		<div class="row">
+			<br/>
+			<br/>
+			<div class="col-md-8 col-md-offset-2">
+				<div style="float:right;right:0;">					
+					<label>From:</label><input type="text" id="from_date" value="" class="from_date" style="width: 120px;"/>
+					<label>To:</label><input type="text" id="to_date" class="to_date" value="" style="width: 120px;" />
+					<!--<button type="button" class="btn btn-default get_graph" id="get_graph">View Graph</button> -->
+					<a href="#" class="btn btn-primary get_graph" id="get_graph">View Graph</a>
+					<a href="data.html" class="btn btn-primary">View Data</a>
+					<script>
+						function leadingZero(value){
+						if(value < 10){
+							return "0" + value.toString();
+						}
+							return value.toString();    
+						}
+						var d = new Date();
+						var	date = d.getFullYear()+"/"+leadingZero((d.getMonth()+1))+"/"+leadingZero(d.getDate())+" "+leadingZero(d.getHours())+":"+leadingZero(d.getMinutes());
+						document.getElementById("to_date").value = date;
+		
+						var d1 = new Date(d -(6*60*60*1000));
+						var	date1 = d1.getFullYear()+"/"+leadingZero((d1.getMonth()+1))+"/"+leadingZero(d1.getDate())+" "+leadingZero(d1.getHours())+":"+leadingZero(d1.getMinutes());
+						document.getElementById("from_date").value = date1;
+					</script>
+				</div>
+				<br>				
+				<br>				
+				<br>
+				<br>
+				<div id="graphs">
+					<div class="big-stats row-fluid graph_box graph_box1">
+						<div id="oxy-graph">
+							<select id="dropdown_oxygen" name="dropdown_oxygen" class="zooming" style="float:right;right:0;">
+								<option value="15-min">15 minutes</option>
+								<option value="30-min">30 minutes</option>
+								<option value="60-min">1 hour</option>
+								<option value="180-min">3 hours</option>
+								<option value="360-min" selected="selected">6 hours</option>
+								<option value="720-min">12 hours</option>
+								<option value="1-days">1 day</option>
+								<option value="7-days">1 week</option>
+								<option value="30-days">1 month</option>
+								<option value="90-days">3 months</option>
+							</select>
+							<div id="graph_oxygen" style="min-width: 400px; height: 300px; margin: 0 auto"></div>
+						</div>
+					</div>
+					<br>
+					<br>
+					<div class="big-stats row-fluid graph_box graph_box2">
+						<div id="temp-graph">
+							<select id="dropdown_temp" name="dropdown_temp" class="zooming" style="float:right;right:0;">
+								<option value="15-min">15 minutes</option>
+								<option value="30-min">30 minutes</option>
+								<option value="60-min">1 hour</option>
+								<option value="180-min">3 hours</option>
+								<option value="360-min" selected="selected">6 hours</option>
+								<option value="720-min">12 hours</option>
+								<option value="1-days">1 day</option>
+								<option value="7-days">1 week</option>
+								<option value="30-days">1 month</option>
+								<option value="90-days">3 months</option>
+							</select>
+							<div id="graph_temp" style="min-width: 400px; height: 300px; margin: 0 auto"></div>
+						</div>
+					</div>
+					<br>
+					<br>
+					<div class="big-stats row-fluid graph_box graph_box_ph">
+						<div id="ph-graph">
+							<select id="dropdown_ph" name="dropdown_ph" class="zooming" style="float:right;right:0;">
+								<option value="15-min">15 minutes</option>
+								<option value="30-min">30 minutes</option>
+								<option value="60-min">1 hour</option>
+								<option value="180-min">3 hours</option>
+								<option value="360-min" selected="selected">6 hours</option>
+								<option value="720-min">12 hours</option>
+								<option value="1-days">1 day</option>
+								<option value="7-days">1 week</option>
+								<option value="30-days">1 month</option>
+								<option value="90-days">3 months</option>
+							</select>
+							<div id="graph_ph" style="min-width: 400px; height: 300px; margin: 0 auto"></div>
+						</div>
+					</div>
+				</div>
+				<script type="text/javascript">
+					$(function() {
+						/*var from_date_time = $(".from_date").val();
+						var to_date_time = $(".to_date").val();*/
+						var from_date_time= new Date($(".from_date").val());
+						from_date_time = new Date(from_date_time.setHours(from_date_time.getHours() - 4));
+						var to_date_time= new Date($(".to_date").val());
+						to_date_time = new Date(to_date_time.setHours(to_date_time.getHours() - 4));
+						
+						function leadingZero(value){
+							if(value < 10){
+								return "0" + value.toString();
+							}
+							return value.toString();    
+						}
+						from_date_time = from_date_time.getFullYear()+"/"+leadingZero((from_date_time.getMonth()+1))+"/"+leadingZero(from_date_time.getDate())+" "+leadingZero(from_date_time.getHours())+":"+leadingZero(from_date_time.getMinutes());
+						to_date_time = to_date_time.getFullYear()+"/"+leadingZero((to_date_time.getMonth()+1))+"/"+leadingZero(to_date_time.getDate())+" "+leadingZero(to_date_time.getHours())+":"+leadingZero(to_date_time.getMinutes());
+						/* ********************************************** */
+						var drop_oxy = 0;
+						var drop_temp = 0;
+						var drop_ph = 0;
+						var device = "xyz";
+						
+						getOxygenGraph(device,from_date_time,to_date_time,drop_oxy);
+						getTemperatureGraph(device,from_date_time,to_date_time,drop_temp);
+						getpHGraph(device,from_date_time,to_date_time,drop_ph);
+						
+						var clickTimerStart; //click timer
+						$(document).on("click",".get_graph", function(e){
+							clickTimerStart = Date.now(); //click timer
+							console.log("Click start: ", clickTimerStart); //click timer
+							/*from_date_time = $(".from_date").val();
+							to_date_time = $(".to_date").val();*/
+							from_date_time= new Date($(".from_date").val());
+							from_date_time = new Date(from_date_time.setHours(from_date_time.getHours() - 4));
+							to_date_time= new Date($(".to_date").val());
+							to_date_time = new Date(to_date_time.setHours(to_date_time.getHours() - 4));
+							
+							function leadingZero(value){
+								if(value < 10){
+									return "0" + value.toString();
+								}
+								return value.toString();    
+							}
+							from_date_time = from_date_time.getFullYear()+"/"+leadingZero((from_date_time.getMonth()+1))+"/"+leadingZero(from_date_time.getDate())+" "+leadingZero(from_date_time.getHours())+":"+leadingZero(from_date_time.getMinutes());
+							to_date_time = to_date_time.getFullYear()+"/"+leadingZero((to_date_time.getMonth()+1))+"/"+leadingZero(to_date_time.getDate())+" "+leadingZero(to_date_time.getHours())+":"+leadingZero(to_date_time.getMinutes());
+							/* ********************************************** */
+							drop_oxy = 0; 
+							drop_temp = 0; 
+							drop_ph = 0;
+							getOxygenGraph(device,from_date_time,to_date_time,drop_oxy);
+							getTemperatureGraph(device,from_date_time,to_date_time,drop_oxy);
+							getpHGraph(device,from_date_time,to_date_time,drop_oxy);
+						});
+						var formattedDate;
+						function changeDateTimeOnDropdown(txt,val){
+							var date = new Date();
+							if(txt=="min"){
+								var res = date.setTime(date.getTime() - (val* 60 * 1000));
+							}else if(txt=="days"){
+								var res = date.setTime(date.getTime() - (val* 86400 * 1000));
+							}
+							date = new Date(res);
+							var hours = date.getHours();
+							var minutes = date.getMinutes();
+							hours = hours > 9 ? hours : "0" + hours;
+							minutes = minutes > 9 ? minutes : "0" + minutes;
+							var dates = date.getDate();
+							dates = dates > 9 ? dates : "0" + dates;
+							var months = date.getMonth()+1;
+							months = months > 9 ? months : "0" + months;
+							var years = date.getFullYear();
+							/* var formattedDate = years + '-' + months + '-' + dates;
+							var formattedTime = hours + ':' + minutes; */
+							formattedDate = years + '/' + months + '/' + dates+' '+hours+':'+minutes;
+							$(".from_date").val(formattedDate);
+							//$("#from_time").val(formattedTime);
+						}
+						function leadingZero(value){
+								if(value < 10){
+									return "0" + value.toString();
+								}
+								return value.toString();    
+						}
+						var dropTimerStartOH; //drop timer
+						$(document).on("change","#dropdown_oxygen", function(e) {
+							dropTimerStartOH = Date.now(); //drop timer
+							console.log("drop start OH: ", dropTimerStartOH); //drop timer
+							from_date_time = "0000/00/00 00:00:00";
+							to_date_time = "0000/00/00 00:00:00";
+							var dt = new Date();
+							var	date_time = dt.getFullYear()+"/"+leadingZero((dt.getMonth()+1))+"/"+leadingZero(dt.getDate())+" "+leadingZero(dt.getHours())+":"+leadingZero(dt.getMinutes());
+							to_date_time = date_time;
+							drop_oxy = $(this).val();
+							var split_drop = drop_oxy.split("-");
+							changeDateTimeOnDropdown(split_drop[1],split_drop[0]);
+							//getOxygenGraph(device,from_date_time,to_date_time,drop_oxy);		
+							getOxygenGraph(device,from_date_time,to_date_time,formattedDate);	
+						});
+						$(document).on("change","#dropdown_temp", function(e) {
+							from_date_time = "0000/00/00 00:00:00";
+							to_date_time = "0000/00/00 00:00:00";
+							var dt = new Date();
+							var	date_time = dt.getFullYear()+"/"+leadingZero((dt.getMonth()+1))+"/"+leadingZero(dt.getDate())+" "+leadingZero(dt.getHours())+":"+leadingZero(dt.getMinutes());
+							to_date_time = date_time;
+							drop_temp = $(this).val();
+							var split_drop = drop_temp.split("-");
+							changeDateTimeOnDropdown(split_drop[1],split_drop[0]);
+							//getTemperatureGraph(device,from_date_time,to_date_time,drop_temp);
+							getTemperatureGraph(device,from_date_time,to_date_time,formattedDate);
+						});
+						$(document).on("change","#dropdown_ph", function(e) {
+							from_date_time = "0000/00/00 00:00:00";
+							to_date_time = "0000/00/00 00:00:00";
+							var dt = new Date();
+							var	date_time = dt.getFullYear()+"/"+leadingZero((dt.getMonth()+1))+"/"+leadingZero(dt.getDate())+" "+leadingZero(dt.getHours())+":"+leadingZero(dt.getMinutes());
+							to_date_time = date_time;
+							drop_ph = $(this).val();
+							var split_drop = drop_ph.split("-");
+							changeDateTimeOnDropdown(split_drop[1],split_drop[0]);
+							//getpHGraph(device,from_date_time,to_date_time,drop_ph);
+							getpHGraph(device,from_date_time,to_date_time,formattedDate);
+						});
+						function getOxygenGraph(id,f_date,t_date,d_time){
+							console.log(f_date);
+							console.log(t_date);
+							//Dissolved Oxygen data
+							var url;
+							if(d_time == 0){
+							url = "http://54.251.133.64:4242/api/query?start="+f_date+"&end="+t_date+"&m=sum:oxygen{deviceId=eruvaka09999}";
+							}
+							else{
+							var date_now = new Date();
+							date_now = date = date_now.getFullYear()+"/"+(date_now.getMonth()+1)+"/"+date_now.getDate()+" "+date_now.getHours()+":"+date_now.getMinutes()+":"+date_now.getSeconds();
+							url = "http://54.251.133.64:4242/api/query?start="+d_time+"&end="+t_date+"&m=sum:oxygen{deviceId=eruvaka09999}";
+							}
+							var processed_json = new Array();
+							$.ajax({
+								crossOrigin: true,
+								url: url,
+								success: function(data) {
+									$.each(JSON.parse(data),function(idx, obj){
+										$.each(obj['dps'], function(i,v){
+											processed_json.push([i*1000, v]);
+										});
+									});
+									// Create the chart
+									$('#graph_oxygen').highcharts({
+											chart: {
+												type: 'line',
+												zoomType: 'x'
+												},
+											title: {
+												text: "Dissolved Oxygen(mg/L)"
+											},
+											xAxis: {
+												title: {
+												text: 'Date and Time'
+												},
+												type: 'datetime',
+												dateTimeLabelFormats: {
+												day: '%e %b'
+												}
+											},
+											yAxis: {                
+												title: {
+												text: 'Dissolved Oxygen(mg/L)'
+												}
+											},
+											series: [{
+												name : 'Dissolved Oxygen',
+												data: processed_json
+											}]
+									});
+								}
+							});
+							var dropTimerEndOH = Date.now(); //drop timer
+							console.log("drop start OH: ", dropTimerEndOH); //drop timer
+							console.log("time taken click load drop OH in seconds: ",(parseInt(dropTimerEndOH) - parseInt(dropTimerStartOH))/1000); //drop timer
+							var clickTimerEndOH = Date.now(); //click timer
+							console.log("click ended OH: ",clickTimerEndOH); //click timer
+							console.log("time taken click load OH in seconds: ",(parseInt(clickTimerEndOH) - parseInt(clickTimerStart))/1000); //click timer
+						}
+						function getTemperatureGraph(id,f_date,t_date,d_time){
+							
+							//temp data
+							var url;
+							if(d_time == 0){
+							url = "http://54.251.133.64:4242/api/query?start="+f_date+"&end="+t_date+"&m=sum:temperature{deviceId=eruvaka09999}";
+							}
+							else{
+							var date_now = new Date();
+							date_now = date = date_now.getFullYear()+"/"+(date_now.getMonth()+1)+"/"+date_now.getDate()+" "+date_now.getHours()+":"+date_now.getMinutes()+":"+date_now.getSeconds();
+							url = "http://54.251.133.64:4242/api/query?start="+d_time+"&end="+t_date+"&m=sum:temperature{deviceId=eruvaka09999}";
+							}
+							var processed_json = new Array();
+							$.ajax({
+								crossOrigin: true,
+								url: url,
+								success: function(data) {
+									$.each(JSON.parse(data),function(idx, obj){
+										$.each(obj['dps'], function(i,v){
+											processed_json.push([i*1000, v]);
+										});
+									});
+									// Create the chart
+									$('#graph_temp').highcharts({
+										chart: {
+											type: 'line',
+											zoomType: 'x'
+										},
+										title: {
+											text: 'Temperature (°C)'
+										},
+										xAxis: {
+											title: {
+											text: 'Date and Time'
+											},
+											type: 'datetime',
+											dateTimeLabelFormats: {
+											day: '%e %b'
+											}
+										},
+										yAxis: {                
+										   title: {
+												text: 'Temperature (°C)'
+											}
+										},
+										series: [{
+											name : 'Temperature',
+											data: processed_json
+										}]
+									});					
+								}
+							});	
+							var clickTimerEndtemp = Date.now(); //click timer
+							console.log("click ended Ptemp: ",clickTimerEndtemp); //click timer
+							console.log("time taken click load temp in seconds: ",(parseInt(clickTimerEndtemp) - parseInt(clickTimerStart))/1000); //click timer
+						}
+						
+					
+						//pH graph
+						function getpHGraph(id,f_date,t_date,d_time){
+							
+							//pH data
+							var url;
+							if(d_time == 0){
+							url = "http://54.251.133.64:4242/api/query?start="+f_date+"&end="+t_date+"&m=sum:ph{deviceId=eruvaka09999}";
+							}
+							else{
+							var date_now = new Date();
+							date_now = date = date_now.getFullYear()+"/"+(date_now.getMonth()+1)+"/"+date_now.getDate()+" "+date_now.getHours()+":"+date_now.getMinutes()+":"+date_now.getSeconds();
+							url = "http://54.251.133.64:4242/api/query?start="+d_time+"&end="+t_date+"&m=sum:ph{deviceId=eruvaka09999}";
+							}
+							var processed_json = new Array();
+							$.ajax({
+								crossOrigin: true,
+								url: url,
+								success: function(data) {
+									$.each(JSON.parse(data),function(idx, obj){
+										$.each(obj['dps'], function(i,v){
+											processed_json.push([i*1000, v]);
+										});
+									});
+									// Create the chart
+									$('#graph_ph').highcharts({
+										chart: {
+											type: 'line',
+												zoomType: 'x'
+											},
+										title: {
+											text: 'pH'
+											},
+										xAxis: {
+											title: {
+												text: 'Date and Time'
+											},
+											type: 'datetime',
+												dateTimeLabelFormats: {
+												day: '%e %b'
+											}
+										},
+										yAxis: {                
+											title: {
+												text: 'pH'
+											}
+										},
+										series: [{
+											name : 'pH',
+											data: processed_json,
+											tooltip: {
+												shared: true,
+												useHTML: true,
+												headerFormat: '<small>{point.key}</small><br><table>',
+												pointFormat: '<tr><td style="color: {series.color}">{series.name}: </td>' +
+													'<td style="text-align: right"><b>{point.y}</b></td></tr>',
+													footerFormat: '</table>',
+													valueDecimals: 2
+											}
+										}]
+									});					
+								}
+							});
+							var clickTimerEndpH = Date.now(); //click timer
+							console.log("click ended PH: ",clickTimerEndpH); //click timer
+							console.log("time taken click load pH in seconds: ",(parseInt(clickTimerEndpH) - parseInt(clickTimerStart))/1000); //click timer
+						}
+						var clickTimerEnd = Date.now(); //over all click timer
+						console.log("click ended PH: ",clickTimerEnd); //over all click timer
+						console.log("time taken click load in seconds: ",(parseInt(clickTimerEnd) - parseInt(clickTimerStart))/1000); //over all click timer
+					});
+				</script>
+			</div>
+		</div>
+    </div>
+	
+	<!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+	
+	<script type="text/javascript" src="js/jquery.ajax-cross-origin.min.js"></script>
+	<!--DateTime js files -->
+	<script charset="utf-8" type="text/javascript" src="js/graph/jquery.datetimepicker.js"></script>
+	<!--<script type="text/javascript" src="./js/google.jquery.api.js"></script>-->
+	<script charset="utf-8" type="text/javascript" src="js/graph/jquery.timepicker.js"></script>
+	<script type="text/javascript" src="js/graph/highstock.js"></script>
+	<script type="text/javascript" src="js/graph/highcharts.js"></script>
+	<script type="text/javascript" src="js/graph/no-data-to-display.js"></script>
+	<script type="text/javascript" src="js/graph/exporting.js"></script>
+	<!-- Scripts for code -->
+	<script>
+		jQuery(function ($) {
+			$('.from_date').datetimepicker().datetimepicker({format:'Y/m/d H:i',step:5,closeOnDateSelect: false,closeOnTimeSelect: true});
+			$('.to_date').datetimepicker().datetimepicker({format:'Y/m/d H:i',step:5,closeOnDateSelect: false,closeOnTimeSelect: true});
+		});
+	</script>
+  </body>
+</html>
