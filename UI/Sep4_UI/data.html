@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="favicon.ico">
+
+    <title>Eruvaka Technologies</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/custom.css" rel="stylesheet">
+	<!-- DataTable css file -->
+	<link rel="stylesheet" href="css/graph/jquery.datetimepicker.css" />
+	<link rel="stylesheet" type="text/css" href="http://cdn.datatables.net/1.10.2/css/jquery.dataTables.css"></link>	
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+  </head>
+
+  <body>
+	<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="dashboard.html">Eruvaka Technologies</a>
+			</div>
+			<div class="navbar-collapse collapse">
+				<ul class="nav navbar-nav">
+					<li><a href="dashboard.html">Dashboard</a></li>
+					<li><a href="#about">Devices</a></li>
+					<li class="active"><a href="graph.html">Graph</a></li>
+					<li><a href="#contact">Settings</a></li>
+				</ul>
+				<ul class="nav navbar-nav navbar-right">
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">Demo user <span class="caret"></span></a>
+						<ul class="dropdown-menu" role="menu">
+							<li><a href="#">Profile</a></li>
+							<li><a href="dashboard/logout">Log out</a></li>
+						</ul>
+					</li>
+				</ul>
+			</div><!--/.nav-collapse -->
+		</div>
+	</div>
+    <div class="container">
+		<div class="row">
+			
+			<div class="col-md-3 sidebar">
+				<p><h2>Devices <input type="text" class="deviceSearch" id="search" placeholder="Search device..." style="width: 60%;display:none;"/></h2></p>
+				<div style="overflow-y: auto;max-height:390px;">
+					<input type="hidden" id="frst_device" />
+					<nav id="navi_menu">
+						
+					</nav>
+				</div>
+			</div>
+			<div class="col-md-9">
+				<div class="row">
+					<div class="col-md-12 divHeader">
+						<div class="row">
+							<div class="col-md-5">
+								<h2 class="customer_device"></h2>
+							</div>
+							<div class="col-md-3">
+								<h2>Pond 1</h2>
+							</div>
+							<div class="col-md-3">
+								<a href="graph.html" class="btn btn-primary get_graph" id="get_graph">View Graph</a>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-12">
+						<div style="float:right;right:0;">					
+							<label>From:</label><input type="text" id="from_date" value="" class="from_date" style="width: 120px;"/>
+							<label>To:</label><input type="text" id="to_date" class="to_date" value="" style="width: 120px;" />
+							<!--<button type="button" class="btn btn-default get_graph" id="get_graph">View Graph</button> -->
+							<a href="javascript:void(0)" class="btn btn-primary get_data" id="get_data">View Data</a>
+							<script>
+								function leadingZero(value){
+									if(value < 10){
+										return "0" + value.toString();
+									}
+										return value.toString();    
+								}
+								var d = new Date();
+								var	date = d.getFullYear()+"/"+leadingZero((d.getMonth()+1))+"/"+leadingZero(d.getDate())+" "+leadingZero(d.getHours())+":"+leadingZero(d.getMinutes());
+								document.getElementById("to_date").value = date;
+				
+								var d1 = new Date(d -(6*60*60*1000));
+								var	date1 = d1.getFullYear()+"/"+leadingZero((d1.getMonth()+1))+"/"+leadingZero(d1.getDate())+" "+leadingZero(d1.getHours())+":"+leadingZero(d1.getMinutes());
+								document.getElementById("from_date").value = date1;
+							</script>
+						</div><br><br><br>
+						<div id="demo"></div>
+					</div>
+				</div>
+			
+				
+				<script type="text/javascript">
+					
+					$(function() {
+						
+					/* ****************************************getting devices********************************************* */
+						function leadingZero(value){
+							if(value < 10){
+								return "0" + value.toString();
+							}
+							return value.toString();    
+						}
+						var d = new Date();
+						var f_date = new Date(d -(120*60*60*1000));
+						f_date = f_date.getFullYear()+"/"+leadingZero((f_date.getMonth()+1))+"/"+leadingZero(f_date.getDate())+" "+leadingZero(f_date.getHours())+":"+leadingZero(f_date.getMinutes());
+						var t_date = new Date();
+						t_date = t_date.getFullYear()+"/"+leadingZero((t_date.getMonth()+1))+"/"+leadingZero(t_date.getDate())+" "+leadingZero(t_date.getHours())+":"+leadingZero(t_date.getMinutes());
+						
+						var url = "http://54.251.133.64:4242/api/query?start="+f_date+"&end="+t_date+"&m=sum:oxygen{user=testuser,deviceId=*}&m=sum:temperature{user=testuser,deviceId=*}&m=sum:ph{user=testuser,deviceId=*}";
+						var child_arry =[];
+						
+						$.ajax({
+							crossOrigin: true,
+							url: url,
+							success: function(data) {
+								$.each(JSON.parse(data),function(idx, obj){
+									child_arry.push(obj['tags']['deviceId']);
+									console.log(child_arry);
+									
+								});
+								
+								console.log(child_arry);
+								/* *****************unique values in arrays******************* */
+								var uniqueVals = [];
+								$.each(child_arry, function(i, el){
+									if($.inArray(el, uniqueVals) === -1) uniqueVals.push(el);
+								});	
+								console.log(uniqueVals);
+								/* *********************************************************** */
+								/* **********************Showing Devices on left navigation menu************************** */
+								
+								var deviceID = uniqueVals[0];
+								$("#frst_device").val(deviceID);
+								$(".customer_device").html(deviceID);
+								getData(deviceID,from_date_time,to_date_time);
+								var html = "";
+								$.each(uniqueVals, function(index, value){
+									html +="<li><a href='javascript:void(0)' id='"+value+"' class='allDevices'>"+value+"</a></li>";
+								});
+								/*html +="<li><a href='javascript:void(0)' id='eruvaka00001' class='allDevices'>eruvaka00001</a></li>";
+								html +="<li><a href='javascript:void(0)' id='eruvaka00002' class='allDevices'>eruvaka00002</a></li>";
+								html +="<li><a href='javascript:void(0)' id='eruvaka00003' class='allDevices'>eruvaka00003</a></li>";*/
+								$("#navi_menu").html("<ul>"+html+"</ul>");
+								/* **************************************************************************************** */
+							}
+						});
+					/* ****************************************************************************************************************** */
+					/* ********************************************common functions************************************************** */
+						/*var from_date_time = $(".from_date").val();
+						var to_date_time = $(".to_date").val();*/
+						/* ********************************************** */
+						var from_date_time= new Date($(".from_date").val());
+						from_date_time = new Date(from_date_time.setHours(from_date_time.getHours() - 4));
+						var to_date_time= new Date($(".to_date").val());
+						to_date_time = new Date(to_date_time.setHours(to_date_time.getHours() - 4));
+						
+						/*function leadingZero(value){
+							if(value < 10){
+								return "0" + value.toString();
+							}
+							return value.toString();    
+						}*/
+						from_date_time = from_date_time.getFullYear()+"/"+leadingZero((from_date_time.getMonth()+1))+"/"+leadingZero(from_date_time.getDate())+" "+leadingZero(from_date_time.getHours())+":"+leadingZero(from_date_time.getMinutes());
+						to_date_time = to_date_time.getFullYear()+"/"+leadingZero((to_date_time.getMonth()+1))+"/"+leadingZero(to_date_time.getDate())+" "+leadingZero(to_date_time.getHours())+":"+leadingZero(to_date_time.getMinutes());
+						/* ********************************************** */
+						//console.log(deviceID);
+						console.log(from_date_time);
+						console.log(to_date_time);
+						//getData(deviceID,from_date_time,to_date_time);
+						$(document).on("click",".get_data", function(e){
+							var deviceID = $("#frst_device").val();
+							/*from_date_time = $(".from_date").val();
+							to_date_time = $(".to_date").val();*/
+							from_date_time= new Date($(".from_date").val());
+							from_date_time = new Date(from_date_time.setHours(from_date_time.getHours() - 4));
+							to_date_time= new Date($(".to_date").val());
+							to_date_time = new Date(to_date_time.setHours(to_date_time.getHours() - 4));
+							
+							from_date_time = from_date_time.getFullYear()+"/"+leadingZero((from_date_time.getMonth()+1))+"/"+leadingZero(from_date_time.getDate())+" "+leadingZero(from_date_time.getHours())+":"+leadingZero(from_date_time.getMinutes());
+							to_date_time = to_date_time.getFullYear()+"/"+leadingZero((to_date_time.getMonth()+1))+"/"+leadingZero(to_date_time.getDate())+" "+leadingZero(to_date_time.getHours())+":"+leadingZero(to_date_time.getMinutes());
+							
+							getData(deviceID,from_date_time,to_date_time);
+						
+						});
+						function formatDate(date) {
+							var d = new Date(date);
+							var hh = d.getHours();
+							var m = d.getMinutes();
+							var s = d.getSeconds();
+							var dd = "AM";
+							var h = hh;
+							if (h >= 12) {
+								h = hh-12;
+								dd = "PM";
+							}
+							if (h == 0) {
+								h = 12;
+							}
+							h = h<10?"0"+h:h;
+							m = m<10?"0"+m:m;
+							s = s<10?"0"+s:s;
+							
+
+							var pattern = new RegExp("0?"+hh+":"+m+":"+s);
+
+							var replacement = h+":"+m+":"+s;
+							replacement += " "+dd;    
+							
+							return replacement;
+						}
+						function month(v) {
+							var n = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+							return n[v]
+						}
+						function getData(id,f_date,t_date){
+							var url = "http://54.251.133.64:4242/api/query?start="+f_date+"&end="+t_date+"&m=sum:oxygen{user=testuser,deviceId="+id+"}&m=sum:temperature{user=testuser,deviceId="+id+"}&m=sum:ph{user=testuser,deviceId="+id+"}";
+							var dps_length;
+							var child_arry =[];
+							var child1_arry = [];
+							$.ajax({
+								crossOrigin: true,
+								url: url,
+								success: function(data) {
+									$.each(JSON.parse(data),function(idx, obj){
+										$.each(obj['dps'], function(i,v){
+											child_arry.push(v);											
+											child1_arry.push(i);											
+										});
+										dps_length = Object.keys(obj['dps']).length;
+									});
+									var len  = dps_length;
+									var row = [];
+									
+									for(var i=0; i< len; i++){
+										var row1 = [];
+										var first_col = [];
+										var second_col = [];
+										var third_col = [];
+										var fourth_col = [];
+										first_col.push(child_arry[i]);
+										second_col.push(child_arry[i+len]);
+										third_col.push(child_arry[i+len+len]);
+										var avg_time = ((parseInt(child1_arry[i]) + parseInt(child1_arry[i+len]) + parseInt(child1_arry[i+len+len]))/3);
+										var d = new Date();
+										var date = new Date(avg_time*1000+ d.getTimezoneOffset() * 60000);
+										date = leadingZero(date.getDate())+" "+leadingZero(month(date.getMonth()))+"-"+(date.getFullYear()+'').slice(-2)+" "+formatDate(date.getTime());
+										fourth_col.push(date);
+															
+										row1.push(first_col);
+										row1.push(second_col);
+										row1.push(third_col);
+										row1.push(fourth_col);
+										row.push(row1);
+									}
+									
+						
+									$(document).ready(function() {
+										$('#demo').html( '<table cellpadding="0" cellspacing="0" border="0" class="display" id="example"></table>' );
+									 
+										$('#example').dataTable( {
+											"data": row,
+											"order": [[3, "desc"]],
+											"columns": [
+												{ "title": "Oxygen(mg/L)" },
+												{ "title": "Temperature(&#8451)" },
+												{ "title": "pH (7.5-8.5)"},
+												{ "title": "Date & Time"}
+											]
+										} );   
+									});
+								}
+							});
+						}
+					/* ****************************************************************************************************************** */
+					/* **************************************************showing data for specific device**************************************************************** */
+						$(document).on('click','.allDevices',function(){
+							//var deviceID = $(this).attr("id");
+							deviceID = $(this).attr("id");
+							$("#frst_device").val(deviceID);
+							$(".customer_device").html(deviceID);
+							getData(deviceID,from_date_time,to_date_time);
+							
+						});
+						
+					}); 
+				</script>
+			</div>			
+		</div>
+    </div>
+	
+	<!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>	
+	<script type="text/javascript" src="js/jquery.ajax-cross-origin.min.js"></script>
+  
+	<!--DataTable Headers-->
+	<script type="text/javascript" src="http://cdn.datatables.net/1.10.2/js/jquery.dataTables.min.js"></script>
+	<!-- DateTime Pickers -->
+	<script charset="utf-8" type="text/javascript" src="js/graph/jquery.datetimepicker.js"></script>
+	<!--<script type="text/javascript" src="./js/google.jquery.api.js"></script>-->
+	<script charset="utf-8" type="text/javascript" src="js/graph/jquery.timepicker.js"></script>
+	<!-- Scripts for Code -->
+	<script>
+		jQuery(function ($) {
+			$('.from_date').datetimepicker().datetimepicker({format:'Y/m/d H:i',step:5,closeOnDateSelect: false,closeOnTimeSelect: true});
+			$('.to_date').datetimepicker().datetimepicker({format:'Y/m/d H:i',step:5,closeOnDateSelect: false,closeOnTimeSelect: true});
+		});
+	</script>
+	<style>
+		.divHeader{
+			border-bottom: 1px solid #eee;
+			box-shadow: 0 14px 18px -14px #ededed;
+			margin: 0 0 15px;
+		}
+	</style>
+  </body>
+</html>
